@@ -1,6 +1,6 @@
 # bodyguard
 
-`bodyguard` is a Go library designed to simplify JSON API response assertions in tests. It provides a declarative way to validate JSON structures, including support for exact matches, type checks, and complex matchers for strings, numbers, objects, and arrays.
+`bodyguard` is a Go library for JSON API response assertions in tests. It provides a declarative way to validate JSON structures, including support for exact matches, type checks, and complex matchers for strings, numbers, objects, and arrays.
 
 ## Installation
 
