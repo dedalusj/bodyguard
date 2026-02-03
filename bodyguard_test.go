@@ -61,6 +61,66 @@ func TestMatchers(t *testing.T) {
 			wantErr:  "expected UUID, got \"not-a-uuid\"",
 		},
 
+		// --- Email ---
+		"Email Pass": {
+			body:     `"test@example.com"`,
+			expected: Email(),
+			wantErr:  "",
+		},
+		"Email Fail": {
+			body:     `"invalid-email"`,
+			expected: Email(),
+			wantErr:  "expected email, got \"invalid-email\"",
+		},
+
+		// --- Regexp ---
+		"Regexp Pass": {
+			body:     `"abc-123"`,
+			expected: Regexp(`^[a-z]{3}-[0-9]{3}$`),
+			wantErr:  "",
+		},
+		"Regexp Fail": {
+			body:     `"abcd-123"`,
+			expected: Regexp(`^[a-z]{3}-[0-9]{3}$`),
+			wantErr:  "expected to match \"^[a-z]{3}-[0-9]{3}$\", got \"abcd-123\"",
+		},
+
+		// --- StringLength ---
+		"StringLength Pass": {
+			body:     `"hello"`,
+			expected: StringLength(3, 10),
+			wantErr:  "",
+		},
+		"StringLength Fail": {
+			body:     `"hi"`,
+			expected: StringLength(3, 10),
+			wantErr:  "expected string length between 3 and 10, got 2",
+		},
+
+		// --- URL ---
+		"URL Pass": {
+			body:     `"https://example.com"`,
+			expected: URL(),
+			wantErr:  "",
+		},
+		"URL Fail": {
+			body:     `"not-a-url"`,
+			expected: URL(),
+			wantErr:  "expected valid URL, got \"not-a-url\"",
+		},
+
+		// --- OneOf ---
+		"OneOf Pass": {
+			body:     `"apple"`,
+			expected: OneOf("apple", "banana", "cherry"),
+			wantErr:  "",
+		},
+		"OneOf Fail": {
+			body:     `"pear"`,
+			expected: OneOf("apple", "banana", "cherry"),
+			wantErr:  "expected one of [apple banana cherry], got \"pear\"",
+		},
+
 		// --- Timestamp (formerly RFC3339) ---
 		"Timestamp Pass": {
 			body:     `"2023-10-27T10:00:00Z"`,
@@ -159,6 +219,42 @@ func TestMatchers(t *testing.T) {
 			body:     `10`,
 			expected: NumberGreater(10),
 			wantErr:  "expected number greater than 10, got 10",
+		},
+
+		// --- Integer ---
+		"Integer Pass": {
+			body:     `123`,
+			expected: Integer(),
+			wantErr:  "",
+		},
+		"Integer Fail": {
+			body:     `123.45`,
+			expected: Integer(),
+			wantErr:  "expected integer, got 123.45",
+		},
+
+		// --- Positive ---
+		"Positive Pass": {
+			body:     `1`,
+			expected: Positive(),
+			wantErr:  "",
+		},
+		"Positive Fail": {
+			body:     `0`,
+			expected: Positive(),
+			wantErr:  "expected number greater than 0, got 0",
+		},
+
+		// --- Negative ---
+		"Negative Pass": {
+			body:     `-1`,
+			expected: Negative(),
+			wantErr:  "",
+		},
+		"Negative Fail": {
+			body:     `1`,
+			expected: Negative(),
+			wantErr:  "expected number smaller than 0, got 1",
 		},
 
 		// --- Object ---

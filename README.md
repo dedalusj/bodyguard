@@ -105,11 +105,20 @@ func TestExample_UnorderedList(t *testing.T) {
 
 ### String Matchers
 - `UUID()`: Matches a string in UUID format.
+- `Email()`: Matches a string in email format.
+- `Regexp(pattern)`: Matches a string against a regular expression.
+- `StringLength(min, max)`: Matches a string with length within the range.
+- `URL()`: Matches a string in URL format.
+- `OneOf(...options)`: Matches if the string is one of the options.
 - `Timestamp()`: Matches a string in RFC3339 format.
 - `Date()`: Matches a string in "2006-01-02" format.
 - `StringWithFormat(func(string) error)`: Custom string format validator.
 
 ### Number Matchers
+- `Number()`: Matches any number value.
+- `Integer()`: Matches an integer value.
+- `Positive()`: Matches a positive number.
+- `Negative()`: Matches a negative number.
 - `NumberWithinDelta(expected, delta)`: Matches a number within a delta of the expected value.
 - `NumberWithinRange(min, max)`: Matches a number within the specified range (inclusive).
 - `NumberGreater(min)`: Matches a number greater than the specified minimum.

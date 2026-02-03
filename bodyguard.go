@@ -139,6 +139,65 @@ func UUID() Matcher {
 	})
 }
 
+var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+
+// Email checks if the value is a valid email string
+func Email() Matcher {
+	return stringValue(func(s string) error {
+		if !emailRegex.MatchString(s) {
+			return fmt.Errorf("expected email, got %q", s)
+		}
+		return nil
+	})
+}
+
+// Regexp checks if the value matches the specified regular expression
+func Regexp(pattern string) Matcher {
+	re, err := regexp.Compile(pattern)
+	return stringValue(func(s string) error {
+		if err != nil {
+			return fmt.Errorf("invalid regexp pattern %q: %w", pattern, err)
+		}
+		if !re.MatchString(s) {
+			return fmt.Errorf("expected to match %q, got %q", pattern, s)
+		}
+		return nil
+	})
+}
+
+// StringLength checks if the string length is within the specified range
+func StringLength(min, max int) Matcher {
+	return stringValue(func(s string) error {
+		length := len(s)
+		if length < min || length > max {
+			return fmt.Errorf("expected string length between %d and %d, got %d", min, max, length)
+		}
+		return nil
+	})
+}
+
+// URL checks if the value is a valid URL
+func URL() Matcher {
+	return stringValue(func(s string) error {
+		if !regexp.MustCompile(`^https?://[^\s/$.?#].[^\s]*$`).MatchString(s) {
+			return fmt.Errorf("expected valid URL, got %q", s)
+		}
+		return nil
+	})
+}
+
+// OneOf checks if the value is one of the specified strings
+func OneOf(options ...string) Matcher {
+	return stringValue(func(s string) error {
+		for _, opt := range options {
+			if s == opt {
+				return nil
+			}
+		}
+		return fmt.Errorf("expected one of %v, got %q", options, s)
+	})
+}
+
 // StringWithFormat checks if the value matches a custom string format
 func StringWithFormat(formatCheck func(string) error) Matcher {
 	return stringValue(formatCheck)
@@ -300,6 +359,32 @@ func NumberSmaller(max float64) Matcher {
 
 		return nil
 	})
+}
+
+// Integer asserts the value is an integer
+func Integer() Matcher {
+	return MatcherFunc(func(path string, value interface{}) error {
+		f64, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("at %s: expected number, got %T", path, value)
+		}
+
+		if f64 != math.Trunc(f64) {
+			return fmt.Errorf("expected integer, got %v", f64)
+		}
+
+		return nil
+	})
+}
+
+// Positive asserts the value is a positive number
+func Positive() Matcher {
+	return NumberGreater(0)
+}
+
+// Negative asserts the value is a negative number
+func Negative() Matcher {
+	return NumberSmaller(0)
 }
 
 // Object is a function that returns a Matcher that matches a JSON object.
